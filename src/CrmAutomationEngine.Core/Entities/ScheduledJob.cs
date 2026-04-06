@@ -2,7 +2,7 @@ using CrmAutomationEngine.Core.Enums;
 
 namespace CrmAutomationEngine.Core.Entities;
 
-public class ScheduledJob
+public class ScheduledJob : TenantEntity
 {
     public string HangfireJobId { get; set; } = string.Empty;
     public string JobType { get; set; } = string.Empty;   // e.g. "SendEmail", "ContactSync"
