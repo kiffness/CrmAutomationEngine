@@ -1,0 +1,8 @@
+src/CrmAutomationEngine.Desktop/
+src/CrmAutomationEngine.Installer/
+**/bin/
+**/obj/
+**/.vs/
+**/.git/
+*.md
+.env

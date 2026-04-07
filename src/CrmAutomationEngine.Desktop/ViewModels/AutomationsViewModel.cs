@@ -5,7 +5,7 @@ using CrmAutomationEngine.Desktop.Services;
 
 namespace CrmAutomationEngine.Desktop.ViewModels;
 
-public class AutomationsViewModel : ViewModelBase
+public class AutomationsViewModel : ViewModelBase, IAutoLoad
 {
     private readonly ApiClient _api;
 
@@ -67,9 +67,12 @@ public class AutomationsViewModel : ViewModelBase
         CancelCommand = new RelayCommand(CloseForm);
     }
 
+    public void BeginLoad() => LoadCommand.Execute(null);
+
     private async Task LoadAsync(int page = 1)
     {
         IsLoading = true;
+        LoadError = null;
         try
         {
             var result = await _api.GetAutomationsAsync(page);
@@ -77,6 +80,10 @@ public class AutomationsViewModel : ViewModelBase
             Items = new ObservableCollection<Automation>(result.Items);
             Page = result.Page;
             TotalPages = (int)Math.Ceiling(result.Total / (double)result.PageSize);
+        }
+        catch (Exception ex)
+        {
+            LoadError = $"Failed to load automations: {ex.Message}";
         }
         finally
         {

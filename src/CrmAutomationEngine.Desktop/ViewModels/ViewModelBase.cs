@@ -17,4 +17,18 @@ public abstract class ViewModelBase : INotifyPropertyChanged
         OnPropertyChanged(name);
         return true;
     }
+
+    private string? _loadError;
+    public string? LoadError
+    {
+        get => _loadError;
+        protected set { Set(ref _loadError, value); OnPropertyChanged(nameof(HasLoadError)); }
+    }
+    public bool HasLoadError => !string.IsNullOrEmpty(_loadError);
+}
+
+/// <summary>Auto-load contract — MainViewModel calls BeginLoad when navigating to a view.</summary>
+public interface IAutoLoad
+{
+    void BeginLoad();
 }

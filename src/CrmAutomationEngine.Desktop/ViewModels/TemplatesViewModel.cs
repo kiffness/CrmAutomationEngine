@@ -5,7 +5,7 @@ using CrmAutomationEngine.Desktop.Services;
 
 namespace CrmAutomationEngine.Desktop.ViewModels;
 
-public class TemplatesViewModel : ViewModelBase
+public class TemplatesViewModel : ViewModelBase, IAutoLoad
 {
     private readonly ApiClient _api;
 
@@ -47,6 +47,7 @@ public class TemplatesViewModel : ViewModelBase
         LoadCommand = new RelayCommand(async () => await LoadAsync());
         NextPageCommand = new RelayCommand(async () => await LoadAsync(_page + 1), () => _page < _totalPages);
         PrevPageCommand = new RelayCommand(async () => await LoadAsync(_page - 1), () => _page > 1);
+
         AddCommand = new RelayCommand(OpenAddForm);
         EditCommand = new RelayCommand<EmailTemplate>(OpenEditForm);
         SaveCommand = new RelayCommand(async () => await SaveAsync());
@@ -54,9 +55,12 @@ public class TemplatesViewModel : ViewModelBase
         CancelCommand = new RelayCommand(CloseForm);
     }
 
+    public void BeginLoad() => LoadCommand.Execute(null);
+
     private async Task LoadAsync(int page = 1)
     {
         IsLoading = true;
+        LoadError = null;
         try
         {
             var result = await _api.GetTemplatesAsync(page);
@@ -64,6 +68,10 @@ public class TemplatesViewModel : ViewModelBase
             Items = new ObservableCollection<EmailTemplate>(result.Items);
             Page = result.Page;
             TotalPages = (int)Math.Ceiling(result.Total / (double)result.PageSize);
+        }
+        catch (Exception ex)
+        {
+            LoadError = $"Failed to load templates: {ex.Message}";
         }
         finally
         {

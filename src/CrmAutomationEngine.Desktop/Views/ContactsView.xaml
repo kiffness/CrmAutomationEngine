@@ -1,18 +1,26 @@
 <UserControl x:Class="CrmAutomationEngine.Desktop.Views.ContactsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </UserControl.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="5">
+        <TextBlock Grid.Row="0" Text="{Binding LoadError}" Foreground="White" Background="#CC3300"
+                   Padding="8,4" TextWrapping="Wrap"
+                   Visibility="{Binding HasLoadError, Converter={StaticResource BoolToVis}}"/>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="5">
             <Button Content="Load" Command="{Binding LoadCommand}"/>
         </StackPanel>
 
-        <DataGrid Grid.Row="1" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True">
+        <DataGrid Grid.Row="2" ItemsSource="{Binding Items}" AutoGenerateColumns="False" IsReadOnly="True">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="First Name"  Binding="{Binding FirstName}"  Width="120"/>
                 <DataGridTextColumn Header="Last Name"   Binding="{Binding LastName}"   Width="120"/>
@@ -22,7 +30,7 @@
             </DataGrid.Columns>
         </DataGrid>
 
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="5">
             <Button Content="&#8592; Prev" Command="{Binding PrevPageCommand}" Margin="0,0,10,0"/>
             <TextBlock Text="{Binding PageDisplay}" VerticalAlignment="Center"/>
             <Button Content="Next &#8594;" Command="{Binding NextPageCommand}" Margin="10,0,0,0"/>

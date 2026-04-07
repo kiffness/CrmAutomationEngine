@@ -5,7 +5,15 @@ namespace CrmAutomationEngine.Desktop.ViewModels;
 public class MainViewModel : ViewModelBase
 {
     private object _currentView;
-    public object CurrentView { get => _currentView; set => Set(ref _currentView, value); }
+    public object CurrentView
+    {
+        get => _currentView;
+        set
+        {
+            Set(ref _currentView, value);
+            if (value is IAutoLoad al) al.BeginLoad();
+        }
+    }
 
     public ICommand ShowContactsCommand { get; }
     public ICommand ShowTemplatesCommand { get; }
@@ -20,5 +28,6 @@ public class MainViewModel : ViewModelBase
         ShowAutomationsCommand = new RelayCommand(() => CurrentView = automations);
         ShowJobsCommand = new RelayCommand(() => CurrentView = jobs);
         _currentView = contacts;
+        contacts.BeginLoad();
     }
 }

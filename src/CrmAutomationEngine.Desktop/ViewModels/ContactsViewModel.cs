@@ -5,7 +5,7 @@ using CrmAutomationEngine.Desktop.Services;
 
 namespace CrmAutomationEngine.Desktop.ViewModels;
 
-public class ContactsViewModel : ViewModelBase
+public class ContactsViewModel : ViewModelBase, IAutoLoad
 {
     private readonly ApiClient _api;
 
@@ -32,9 +32,12 @@ public class ContactsViewModel : ViewModelBase
         PrevPageCommand = new RelayCommand(async () => await LoadAsync(_page - 1), () => _page > 1);
     }
 
+    public void BeginLoad() => LoadCommand.Execute(null);
+
     private async Task LoadAsync(int page = 1)
     {
         IsLoading = true;
+        LoadError = null;
         try
         {
             var result = await _api.GetContactsAsync(page);
@@ -42,6 +45,10 @@ public class ContactsViewModel : ViewModelBase
             Items = new ObservableCollection<Contact>(result.Items);
             Page = result.Page;
             TotalPages = (int)Math.Ceiling(result.Total / (double)result.PageSize);
+        }
+        catch (Exception ex)
+        {
+            LoadError = $"Failed to load contacts: {ex.Message}";
         }
         finally
         {
