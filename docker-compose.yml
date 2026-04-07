@@ -8,20 +8,23 @@ services:
       POSTGRES_PASSWORD: ${DB_PASSWORD}
     volumes:
       - pgdata:/var/lib/postgresql/data
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U crm"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  server:
+  crm-server:
     build: .
     restart: unless-stopped
     depends_on:
       db:
         condition: service_healthy
-    ports:
-      - "8080:8080"
+    networks:
+      - internal   # can reach db
+      - proxy      # reachable by Caddy as "crm-server:8080"
     environment:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Default: Host=db;Database=crm;Username=crm;Password=${DB_PASSWORD}
@@ -30,6 +33,16 @@ services:
       Jwt__Audience: CrmAutomationEngine
       SendGrid__ApiKey: ${SENDGRID_API_KEY}
       SendGrid__FromEmail: ${SENDGRID_FROM_EMAIL}
+      Seed__TenantName: ${SEED_TENANT_NAME:-}
+      Seed__AdminEmail: ${SEED_ADMIN_EMAIL:-}
+      Seed__AdminPassword: ${SEED_ADMIN_PASSWORD:-}
+      Seed__HubSpotToken: ${SEED_HUBSPOT_TOKEN:-}
+      Seed__HubSpotClientSecret: ${SEED_HUBSPOT_CLIENT_SECRET:-}
 
 volumes:
   pgdata:
+
+networks:
+  internal:
+  proxy:
+    external: true  # shared network Caddy is already on — must exist before compose up
