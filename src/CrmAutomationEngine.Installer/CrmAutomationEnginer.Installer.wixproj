@@ -1,6 +1,22 @@
 <Project Sdk="WixToolset.Sdk">
-    <PropertyGroup>
-        <OutputType>Package</OutputType>
-        <Platform>x64</Platform>
-    </PropertyGroup>
+  <PropertyGroup>
+    <OutputType>Package</OutputType>
+    <Platform>x64</Platform>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="WixToolset.UI.wixext" Version="4.*"/>
+    <PackageReference Include="WixToolset.Util.wixext" Version="4.*"/>
+  </ItemGroup>
+
+  <!--
+    Harvests the Desktop app's published binaries automatically.
+    Build the Desktop project first (Release|x64) so the output exists.
+  -->
+  <ItemGroup>
+    <ProjectReference Include="..\CrmAutomationEngine.Desktop\CrmAutomationEngine.Desktop.csproj">
+      <RefProjectOutputGroups>Binaries</RefProjectOutputGroups>
+      <RefTargetDir>INSTALLFOLDER</RefTargetDir>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

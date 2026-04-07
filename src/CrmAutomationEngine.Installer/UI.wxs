@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs">
+
+  <Fragment>
+    <UI Id="CrmSetupUI">
+
+      <!--
+        Base on WixUI_Minimal (Welcome → VerifyReady → Progress → Exit).
+        We inject ServerUrlDlg between Welcome and VerifyReady by overriding
+        the Next/Back publishes with a higher Order so they execute last.
+      -->
+      <UIRef Id="WixUI_Minimal"/>
+
+      <!-- Override: WelcomeDlg.Next → ServerUrlDlg instead of VerifyReadyDlg -->
+      <Publish Dialog="WelcomeDlg" Control="Next" Event="NewDialog" Value="ServerUrlDlg" Order="999">1</Publish>
+
+      <!-- Override: VerifyReadyDlg.Back → ServerUrlDlg on fresh install -->
+      <Publish Dialog="VerifyReadyDlg" Control="Back" Event="NewDialog" Value="ServerUrlDlg" Order="999">NOT Installed</Publish>
+
+      <!-- ═══════════════════════════════════════════════
+           ServerUrlDlg — prompts for the server URL
+           ═══════════════════════════════════════════════ -->
+      <Dialog Id="ServerUrlDlg" Width="370" Height="270" Title="[ProductName] Setup">
+
+        <!-- Header banner -->
+        <Control Id="BannerBitmap" Type="Bitmap"
+                 X="0" Y="0" Width="370" Height="44"
+                 TabSkip="no" Text="WixUI_Bmp_Banner"/>
+        <Control Id="BannerLine" Type="Line"
+                 X="0" Y="44" Width="370" Height="0"/>
+
+        <!-- Title + description -->
+        <Control Id="Title" Type="Text"
+                 X="15" Y="6" Width="200" Height="15"
+                 Transparent="yes" NoPrefix="yes"
+                 Text="{\WixUI_Font_Title}Server Configuration"/>
+        <Control Id="Description" Type="Text"
+                 X="25" Y="23" Width="320" Height="15"
+                 Transparent="yes" NoPrefix="yes"
+                 Text="Enter the URL of your CRM Automation Engine server."/>
+
+        <!-- Server URL field -->
+        <Control Id="ServerUrlLabel" Type="Text"
+                 X="25" Y="60" Width="320" Height="15"
+                 Text="Server URL:"/>
+        <Control Id="ServerUrlEdit" Type="Edit"
+                 X="25" Y="77" Width="320" Height="18"
+                 Property="SERVER_URL" Text="{200}[SERVER_URL]"/>
+        <Control Id="ServerUrlHint" Type="Text"
+                 X="25" Y="100" Width="320" Height="15"
+                 Text="Example: https://crm.yourdomain.com"/>
+
+        <!-- Bottom line + navigation -->
+        <Control Id="BottomLine" Type="Line"
+                 X="0" Y="234" Width="370" Height="0"/>
+
+        <Control Id="Next" Type="PushButton"
+                 X="236" Y="243" Width="56" Height="17"
+                 Default="yes" Text="[ButtonText_Next]">
+          <Publish Event="NewDialog" Value="VerifyReadyDlg">SERVER_URL AND SERVER_URL &lt;&gt; "https://"</Publish>
+          <Publish Event="SpawnDialog" Value="InvalidUrlDlg">NOT (SERVER_URL AND SERVER_URL &lt;&gt; "https://")</Publish>
+        </Control>
+
+        <Control Id="Back" Type="PushButton"
+                 X="180" Y="243" Width="56" Height="17"
+                 Text="[ButtonText_Back]">
+          <Publish Event="NewDialog" Value="WelcomeDlg">1</Publish>
+        </Control>
+
+        <Control Id="Cancel" Type="PushButton"
+                 X="304" Y="243" Width="56" Height="17"
+                 Cancel="yes" Text="[ButtonText_Cancel]">
+          <Publish Event="SpawnDialog" Value="CancelDlg">1</Publish>
+        </Control>
+      </Dialog>
+
+      <!-- ═══════════════════════════════════════════════
+           InvalidUrlDlg — shown if the user clicks Next
+           without filling in a URL
+           ═══════════════════════════════════════════════ -->
+      <Dialog Id="InvalidUrlDlg" Width="260" Height="85" Title="[ProductName] Setup"
+              NoMinimize="yes">
+        <Control Id="Message" Type="Text"
+                 X="48" Y="15" Width="194" Height="30"
+                 Text="Please enter a valid server URL before continuing."/>
+        <Control Id="Ok" Type="PushButton"
+                 X="102" Y="57" Width="56" Height="17"
+                 Default="yes" Cancel="yes" Text="OK">
+          <Publish Event="EndDialog" Value="Return">1</Publish>
+        </Control>
+      </Dialog>
+
+    </UI>
+  </Fragment>
+</Wix>
