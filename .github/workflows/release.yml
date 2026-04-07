@@ -1,0 +1,39 @@
+name: release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  build-installer:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install WiX toolset
+        run: dotnet tool install --global wix
+
+      - name: Build installer
+        run: dotnet build src/CrmAutomationEngine.Installer/CrmAutomationEnginer.Installer.wixproj -c Release
+
+      - name: Find MSI
+        id: msi
+        shell: pwsh
+        run: |
+          $msi = Get-ChildItem -Path src/CrmAutomationEngine.Installer/bin -Recurse -Filter *.msi | Select-Object -First 1
+          echo "path=$($msi.FullName)" >> $env:GITHUB_OUTPUT
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: CRM Automation Engine ${{ github.ref_name }}
+          generate_release_notes: true
+          files: ${{ steps.msi.outputs.path }}
