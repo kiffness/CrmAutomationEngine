@@ -12,8 +12,9 @@ public class TenantResolutionMiddleware
 
     public async Task InvokeAsync(HttpContext context, AppDbContext db, TenantContext tenantContext)
     {
-        // Webhook routes resolve their own tenant from the URL API key — skip middleware
-        if (context.Request.Path.StartsWithSegments("/api/webhook"))
+        // Webhook and auth routes handle their own resolution — skip middleware
+        if (context.Request.Path.StartsWithSegments("/api/webhook") ||
+            context.Request.Path.StartsWithSegments("/api/auth"))
         {
             await _next(context);
             return;

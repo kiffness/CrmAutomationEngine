@@ -2,6 +2,8 @@ using System.Text;
 using CrmAutomationEngine.Infrastructure;
 using CrmAutomationEngine.Server.Jobs;
 using CrmAutomationEngine.Server.Middleware;
+using CrmAutomationEngine.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 using CrmAutomationEngine.Server.Services;
 using Hangfire;
 using Hangfire.PostgreSql;
@@ -42,6 +44,14 @@ builder.Services.AddScoped<ContactSyncJob>();
 builder.Services.AddScoped<TemplateRenderer>();
 
 var app = builder.Build();
+
+// Apply pending migrations and seed the first tenant on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await db.Database.MigrateAsync();
+}
+await TenantSeeder.SeedAsync(app.Services);
 
 app.UseAuthentication();
 app.UseAuthorization();

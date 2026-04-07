@@ -7,4 +7,6 @@ public class Tenant
     public string ApiKey { get; set; } = string.Empty;
     public string HubSpotToken { get; set; } = string.Empty;
     public string HubSpotClientSecret { get; set; } = string.Empty;
+    public string AdminEmail { get; set; } = string.Empty;
+    public string PasswordHash { get; set; } = string.Empty;
 }

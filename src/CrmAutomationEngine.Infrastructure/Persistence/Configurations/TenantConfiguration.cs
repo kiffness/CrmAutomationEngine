@@ -14,5 +14,8 @@ public class TenantConfiguration : IEntityTypeConfiguration<Tenant>
         builder.HasIndex(e => e.ApiKey).IsUnique();
         builder.Property(e => e.HubSpotToken).IsRequired().HasMaxLength(512);
         builder.Property(e => e.HubSpotClientSecret).IsRequired().HasMaxLength(256);
+        builder.Property(e => e.AdminEmail).IsRequired().HasMaxLength(256);
+        builder.HasIndex(e => e.AdminEmail).IsUnique();
+        builder.Property(e => e.PasswordHash).IsRequired();
     }
 }
