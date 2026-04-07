@@ -1,12 +1,40 @@
-﻿<Window x:Class="CrmAutomationEngine.Desktop.MainWindow"
+<Window x:Class="CrmAutomationEngine.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:CrmAutomationEngine.Desktop"
-        mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        xmlns:vm="clr-namespace:CrmAutomationEngine.Desktop.ViewModels"
+        xmlns:views="clr-namespace:CrmAutomationEngine.Desktop.Views"
+        Title="CRM Automation Engine" Height="600" Width="960" MinHeight="400" MinWidth="640">
 
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:ContactsViewModel}">
+            <views:ContactsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TemplatesViewModel}">
+            <views:TemplatesView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:AutomationsViewModel}">
+            <views:AutomationsView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:JobsViewModel}">
+            <views:JobsView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Nav sidebar -->
+        <StackPanel Grid.Column="0" Background="#F0F0F0">
+            <Button Content="Contacts"    Command="{Binding ShowContactsCommand}"    Margin="8" Padding="6"/>
+            <Button Content="Templates"   Command="{Binding ShowTemplatesCommand}"   Margin="8" Padding="6"/>
+            <Button Content="Automations" Command="{Binding ShowAutomationsCommand}" Margin="8" Padding="6"/>
+            <Button Content="Jobs"        Command="{Binding ShowJobsCommand}"        Margin="8" Padding="6"/>
+        </StackPanel>
+
+        <!-- Content area -->
+        <ContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="8"/>
     </Grid>
 </Window>
