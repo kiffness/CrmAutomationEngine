@@ -15,5 +15,5 @@ jobs:
       - name: Deploy
         run: |
           cp -r ${{ github.workspace }}/. /home/runner/crm/
-          cd /home/runner/crm
+          cd /home/runner/relay-server
           docker compose up -d --build
