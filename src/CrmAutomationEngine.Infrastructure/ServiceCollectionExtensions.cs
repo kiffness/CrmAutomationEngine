@@ -15,7 +15,8 @@ public static class ServiceCollectionExtensions
         services.AddDbContext<AppDbContext>(options =>
             options.UseNpgsql(config.GetConnectionString("Default")));
 
-        services.AddScoped<ITenantContext, TenantContext>();
+        services.AddScoped<TenantContext>();
+        services.AddScoped<ITenantContext>(sp => sp.GetRequiredService<TenantContext>());
         services.AddHttpClient<IHubSpotClient, HubSpotClient>();
         services.AddScoped<IEmailService, SendGridEmailService>();
 
