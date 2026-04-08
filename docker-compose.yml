@@ -28,16 +28,16 @@ services:
     environment:
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__Default: Host=db;Database=crm;Username=crm;Password=${DB_PASSWORD}
-      Jwt__Key: ${JWT_KEY}
+      Jwt__Key: ${Jwt__Key}
       Jwt__Issuer: CrmAutomationEngine
       Jwt__Audience: CrmAutomationEngine
-      SendGrid__ApiKey: ${SENDGRID_API_KEY}
-      SendGrid__FromEmail: ${SENDGRID_FROM_EMAIL}
-      Seed__TenantName: ${SEED_TENANT_NAME:-}
-      Seed__AdminEmail: ${SEED_ADMIN_EMAIL:-}
-      Seed__AdminPassword: ${SEED_ADMIN_PASSWORD:-}
-      Seed__HubSpotToken: ${SEED_HUBSPOT_TOKEN:-}
-      Seed__HubSpotClientSecret: ${SEED_HUBSPOT_CLIENT_SECRET:-}
+      SendGrid__ApiKey: ${SendGrid__ApiKey}
+      SendGrid__FromEmail: ${SendGrid__FromEmail}
+      Seed__TenantName: ${Seed__TenantName:-}
+      Seed__AdminEmail: ${Seed__AdminEmail:-}
+      Seed__AdminPassword: ${Seed__AdminPassword:-}
+      Seed__HubSpotToken: ${Seed__HubSpotToken:-}
+      Seed__HubSpotClientSecret: ${Seed__HubSpotClientSecret:-}
 
 volumes:
   pgdata:
