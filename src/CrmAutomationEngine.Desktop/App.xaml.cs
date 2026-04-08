@@ -1,4 +1,3 @@
-using System.IO;
 using System.Windows;
 using CrmAutomationEngine.Desktop.Services;
 using CrmAutomationEngine.Desktop.ViewModels;
@@ -18,7 +17,20 @@ public partial class App : Application
             .AddJsonFile("appsettings.json", optional: false)
             .Build();
 
-        var api = new ApiClient(config);
+        var serverUrl = config["ServerUrl"] ?? throw new InvalidOperationException("ServerUrl not configured");
+
+        var loginVm = new LoginViewModel(serverUrl);
+        string? token = null;
+        loginVm.LoginSucceeded += t => token = t;
+
+        var loginWindow = new LoginWindow(loginVm);
+        if (loginWindow.ShowDialog() != true || token is null)
+        {
+            Shutdown();
+            return;
+        }
+
+        var api = new ApiClient(serverUrl, token);
 
         var contacts    = new ContactsViewModel(api);
         var templates   = new TemplatesViewModel(api);
