@@ -14,7 +14,8 @@ public class TenantResolutionMiddleware
     {
         // Webhook and auth routes handle their own resolution — skip middleware
         if (context.Request.Path.StartsWithSegments("/api/webhook") ||
-            context.Request.Path.StartsWithSegments("/api/auth"))
+            context.Request.Path.StartsWithSegments("/api/auth") ||
+            context.Request.Path.StartsWithSegments("/hangfire"))
         {
             await _next(context);
             return;
