@@ -10,14 +10,23 @@ public class ApiClient
 {
     private readonly HttpClient _http;
 
-    public ApiClient(IConfiguration config)
+    public ApiClient(string serverUrl, string token)
     {
-        var serverUrl = config["ServerUrl"] ?? throw new InvalidOperationException("ServerUrl not configured");
-        var token = config["Jwt:Token"] ?? string.Empty;
         _http = new HttpClient { BaseAddress = new Uri(serverUrl) };
-        if (!string.IsNullOrEmpty(token))
-            _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+        _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
     }
+
+    public static async Task<string> LoginAsync(string serverUrl, string email, string password)
+    {
+        using var http = new HttpClient { BaseAddress = new Uri(serverUrl) };
+        var response = await http.PostAsJsonAsync("api/auth/login", new { email, password });
+        if (!response.IsSuccessStatusCode)
+            throw new InvalidOperationException("Invalid email or password.");
+        var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+        return result?.Token ?? throw new InvalidOperationException("No token in response.");
+    }
+
+    private record LoginResponse(string Token);
 
     // Contacts
     public Task<PagedResult<Contact>?> GetContactsAsync(int page = 1, int pageSize = 50) =>

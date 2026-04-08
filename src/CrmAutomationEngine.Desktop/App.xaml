@@ -4,6 +4,6 @@
              xmlns:local="clr-namespace:CrmAutomationEngine.Desktop"
 >
     <Application.Resources>
-         
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
     </Application.Resources>
 </Application>

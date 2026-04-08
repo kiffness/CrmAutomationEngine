@@ -17,3 +17,10 @@ public class RelayCommand<T>(Action<T> execute, Func<T, bool>? canExecute = null
     public event EventHandler? CanExecuteChanged;
     public void RaiseCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
 }
+
+public class AsyncRelayCommand<T>(Func<T?, Task> execute) : ICommand
+{
+    public bool CanExecute(object? _) => true;
+    public void Execute(object? parameter) => execute(parameter is T t ? t : default);
+    public event EventHandler? CanExecuteChanged;
+}
