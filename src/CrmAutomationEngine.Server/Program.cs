@@ -57,7 +57,10 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.UseMiddleware<TenantResolutionMiddleware>();
 app.MapControllers();
-app.MapHangfireDashboard("/hangfire");
+app.MapHangfireDashboard("/hangfire", new DashboardOptions
+{
+    Authorization = []  // allow all — dashboard is internal/VPS only
+});
 
 RecurringJob.AddOrUpdate<ContactSyncJob>(
     "contact-sync",
