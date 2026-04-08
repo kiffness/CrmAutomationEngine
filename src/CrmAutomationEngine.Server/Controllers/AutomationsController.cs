@@ -9,8 +9,13 @@ namespace CrmAutomationEngine.Server.Controllers;
 public class AutomationsController(AppDbContext db, TenantContext tenantContext) : BaseController
 {
     [HttpGet]
-    public async Task<IActionResult> List()
-        => Ok(await db.Automations.Include(a => a.EmailTemplate).ToListAsync());
+    public async Task<IActionResult> List([FromQuery] int page = 1, [FromQuery] int pageSize = 50)
+    {
+        var query = db.Automations.Include(a => a.EmailTemplate).OrderBy(a => a.Name);
+        var total = await query.CountAsync();
+        var items = await query.Skip((page - 1) * pageSize).Take(pageSize).ToListAsync();
+        return Ok(new PagedResult<Automation>(items, total, page, pageSize));
+    }
     
     [HttpGet("{id:guid}")]
     public async Task<IActionResult> Get(Guid id)
